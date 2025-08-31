@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Status serwisów</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 30px;
+      flex-grow: 1;
+    }
+    li {
+      margin: 12px 0;
+      font-size: 18px;
+    }
+    .online { color: green; }
+    .offline { color: red; }
+    footer {
+      margin-top: auto;
+      padding: 20px;
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌍 Status serwisów</h1>
+  <button onclick="checkSites()">🔎 Sprawdź wszystkie</button>
+
+  <ul id="results">
+    <li id="sklep">Sklep – ⏳ nie sprawdzono</li>
+    <li id="forum">Forum – ⏳ nie sprawdzono</li>
+  </ul>
+
+  <script>
+    const sites = {
+      sklep: { name: "Sklep", url: "https://trzmiel.com.pl" },
+      forum: { name: "Forum", url: "http://localhost" }
+    };
+
+    function checkSites() {
+      for (const [id, site] of Object.entries(sites)) {
+        const li = document.getElementById(id);
+        li.textContent = site.name + " – ⏳ Sprawdzam...";
+
+        fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(site.url))
+          .then(response => {
+            if (response.ok) {
+              li.textContent = site.name + " – ✅ ONLINE";
+              li.className = "online";
+            } else {
+              li.textContent = site.name + " – ⚠️ Błąd: " + response.status;
+              li.className = "offline";
+            }
+          })
+          .catch(() => {
+            li.textContent = site.name + " – ❌ OFFLINE lub niedostępna";
+            li.className = "offline";
+          });
+      }
+    }
+  </script>
+
+  <footer>
+    © WelonekAI
+  </footer>
+</body>
+</html>
